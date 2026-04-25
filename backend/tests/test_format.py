@@ -18,6 +18,8 @@ def test_format_accepts_valid_text_and_instruction() -> None:
 
 
 def test_format_returns_expected_fields() -> None:
+    expected_fields = {"formatted_text", "detected_type", "changes_made"}
+
     response = client.post(
         "/format",
         json={
@@ -28,9 +30,7 @@ def test_format_returns_expected_fields() -> None:
 
     body = response.json()
 
-    assert "formatted_text" in body
-    assert "detected_type" in body
-    assert "changes_made" in body
+    assert expected_fields <= body.keys()
     assert isinstance(body["changes_made"], list)
 
 
@@ -85,3 +85,41 @@ def test_format_rejects_empty_instruction() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_format_openai_provider_without_api_key_falls_back_to_mock(monkeypatch) -> None:
+    monkeypatch.setenv("FORMATCLIP_PROVIDER", "openai")
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    response = client.post(
+        "/format",
+        json={
+            "text": "uhh first task ; basically second task",
+            "instruction": "turn into clean bullet points",
+        },
+    )
+
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["formatted_text"] == "- First task\n- Second task"
+    assert body["detected_type"] == "notes"
+    assert "changes_made" in body
+
+
+def test_format_unknown_provider_falls_back_to_mock(monkeypatch) -> None:
+    monkeypatch.setenv("FORMATCLIP_PROVIDER", "unknown")
+
+    response = client.post(
+        "/format",
+        json={
+            "text": "umm follow up with sales",
+            "instruction": "turn into clean bullet points",
+        },
+    )
+
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["formatted_text"] == "- Follow up with sales"
+    assert body["detected_type"] == "notes"

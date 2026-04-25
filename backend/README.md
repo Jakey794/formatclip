@@ -1,6 +1,7 @@
 # FormatClip Backend
 
-Mock FastAPI backend for FormatClip. It exposes a health check and a mock text formatting endpoint while the provider integration is intentionally left out.
+FastAPI backend for FormatClip. It exposes a health check and a text formatting
+endpoint with a mock formatter by default and optional OpenAI formatting.
 
 ## Setup
 
@@ -16,6 +17,27 @@ python -m pip install -e ".[dev]"
 ```bash
 uvicorn app.main:app --reload
 ```
+
+## Formatter Provider
+
+Mock mode is the default and requires no configuration:
+
+```bash
+FORMATCLIP_PROVIDER=mock
+FORMATCLIP_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=
+```
+
+OpenAI is optional. To enable it, set:
+
+```bash
+FORMATCLIP_PROVIDER=openai
+FORMATCLIP_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=your_key
+```
+
+If OpenAI configuration is missing or the provider call fails, the backend falls
+back to the mock formatter so the local demo keeps working.
 
 ## Test
 
@@ -64,4 +86,4 @@ Response:
 }
 ```
 
-This backend is mock-only for now. It does not call OpenAI, Gemini, Groq, or any other real provider.
+The `/format` response schema is the same for both providers.
