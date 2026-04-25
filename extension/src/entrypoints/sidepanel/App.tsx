@@ -1,4 +1,5 @@
 import { EmptyState } from "../../components/EmptyState";
+import { FormatPanel } from "../../components/FormatPanel";
 import { SnippetInput } from "../../components/SnippetInput";
 import { SnippetList } from "../../components/SnippetList";
 import { useSnippets } from "../../hooks/useSnippets";
@@ -106,31 +107,13 @@ function App() {
           </div>
         </section>
 
-        <section
-          aria-label="Formatted result"
-          className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm"
-        >
-          <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
-            Result
-          </p>
-          <p className="mt-3 min-h-32 rounded-md border border-stone-200 bg-stone-50 p-3 text-sm leading-6 text-stone-500">
-            Formatted text will appear here.
-          </p>
-        </section>
+        <FormatPanel selectedSnippet={selectedSnippet} />
 
         {error ? (
           <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm leading-5 text-red-700">
             {error}
           </p>
         ) : null}
-
-        <button
-          type="button"
-          disabled
-          className="rounded-lg bg-stone-300 px-4 py-3 text-sm font-semibold text-stone-500"
-        >
-          Format
-        </button>
 
         <p className="mt-auto border-t border-stone-200 pt-4 text-xs leading-5 text-stone-500">
           Snippets stay local. Text is sent only when you click Format.
