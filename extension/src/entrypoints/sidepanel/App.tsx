@@ -31,18 +31,28 @@ function App() {
       return;
     }
 
-    if (window.confirm("Clear all saved snippets?")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete all saved snippets? This cannot be undone.",
+      )
+    ) {
       await clearSnippets();
     }
   }
 
+  const secondaryDangerButtonClass =
+    "rounded-lg border border-red-200 bg-white px-3 py-2.5 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:border-stone-200 disabled:bg-stone-50 disabled:text-stone-400";
+
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950">
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-5 px-5 py-6">
-        <header className="space-y-1">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 py-5">
+        <header className="space-y-2 rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
           <h1 className="text-2xl font-semibold tracking-normal">FormatClip</h1>
           <p className="text-sm leading-6 text-stone-600">
-            Clean up messy copied text before reuse.
+            Save messy copied text, then format it into clean reusable output.
+          </p>
+          <p className="border-t border-stone-100 pt-2 text-xs leading-5 text-stone-500">
+            Snippets stay local. Text is sent only when you click Format.
           </p>
         </header>
 
@@ -54,7 +64,7 @@ function App() {
         >
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
-              Snippets
+              Saved snippets
             </p>
             <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-600">
               {snippets.length} saved
@@ -76,21 +86,10 @@ function App() {
               <EmptyState />
             )}
           </div>
-        </section>
 
-        <section
-          aria-label="Selected snippet"
-          className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm"
-        >
-          <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
-            Selected preview
-          </p>
-          <p className="mt-3 min-h-24 whitespace-pre-wrap rounded-md border border-stone-200 bg-stone-50 p-3 text-sm leading-6 text-stone-700">
-            {selectedSnippet?.text ?? "Select a snippet to preview it."}
-          </p>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <button
-              className="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-semibold text-stone-800 transition hover:border-stone-500 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-400"
+              className={secondaryDangerButtonClass}
               disabled={!selectedSnippetId}
               onClick={handleDeleteSelected}
               type="button"
@@ -98,7 +97,7 @@ function App() {
               Delete selected
             </button>
             <button
-              className="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-semibold text-stone-800 transition hover:border-stone-500 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-400"
+              className={secondaryDangerButtonClass}
               disabled={!snippets.length}
               onClick={handleClearAll}
               type="button"
@@ -118,10 +117,6 @@ function App() {
             {error}
           </p>
         ) : null}
-
-        <p className="mt-auto border-t border-stone-200 pt-4 text-xs leading-5 text-stone-500">
-          Snippets stay local. Text is sent only when you click Format.
-        </p>
       </div>
     </main>
   );

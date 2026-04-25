@@ -2,7 +2,7 @@ import { API_BASE_URL } from "./config";
 import type { FormatRequest, FormatResponse } from "./types";
 
 const BACKEND_UNREACHABLE_MESSAGE =
-  "Could not reach the local FormatClip backend. Make sure FastAPI is running on http://127.0.0.1:8000.";
+  "Could not reach the local FormatClip backend. Start FastAPI on http://127.0.0.1:8000 and try again.";
 
 function isFormatResponse(value: unknown): value is FormatResponse {
   if (!value || typeof value !== "object") {

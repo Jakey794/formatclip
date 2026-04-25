@@ -1,6 +1,7 @@
 type ActionBarProps = {
   canFormat: boolean;
   hasResult: boolean;
+  isFormatting: boolean;
   onClearResult: () => void;
   onCopyResult: () => void;
   onFormat: () => void;
@@ -13,6 +14,7 @@ const secondaryButtonClass =
 export function ActionBar({
   canFormat,
   hasResult,
+  isFormatting,
   onClearResult,
   onCopyResult,
   onFormat,
@@ -26,7 +28,7 @@ export function ActionBar({
         onClick={onFormat}
         type="button"
       >
-        Format
+        {isFormatting ? "Formatting..." : "Format"}
       </button>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <button
@@ -35,7 +37,7 @@ export function ActionBar({
           onClick={onCopyResult}
           type="button"
         >
-          Copy result
+          Copy
         </button>
         <button
           className={secondaryButtonClass}

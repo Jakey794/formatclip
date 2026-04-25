@@ -32,13 +32,13 @@ export function SnippetInput({ onAddSnippet }: SnippetInputProps) {
         htmlFor="snippet-input"
         className="text-xs font-medium uppercase tracking-wide text-stone-500"
       >
-        New snippet
+        Add snippet
       </label>
       <textarea
         id="snippet-input"
         className="mt-3 min-h-28 w-full resize-y rounded-md border border-stone-300 bg-white p-3 text-sm leading-6 text-stone-800 outline-none focus:border-stone-500 focus:ring-2 focus:ring-stone-200"
         onChange={(event) => setText(event.target.value)}
-        placeholder="Type or paste text here."
+        placeholder="Paste messy copied text here."
         value={text}
       />
       <button
@@ -46,7 +46,7 @@ export function SnippetInput({ onAddSnippet }: SnippetInputProps) {
         disabled={!trimmedText}
         type="submit"
       >
-        Add Snippet
+        Add snippet
       </button>
     </form>
   );

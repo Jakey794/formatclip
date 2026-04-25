@@ -27,9 +27,10 @@ export function FormatPanel({
   const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(
     null,
   );
+  const isFormatting = resultState === "loading";
   const hasResult = resultState === "success";
   const canFormat = Boolean(
-    selectedSnippet && instruction.trim() && resultState !== "loading",
+    selectedSnippet && instruction.trim() && !isFormatting,
   );
 
   function clearMessages() {
@@ -75,7 +76,7 @@ export function FormatPanel({
 
     try {
       await navigator.clipboard.writeText(result.formatted_text);
-      setCopyMessage("Copied.");
+      setCopyMessage("Copied to clipboard.");
     } catch {
       setActionErrorMessage(
         "Could not copy the formatted result. Please try again.",
@@ -110,15 +111,28 @@ export function FormatPanel({
       aria-label="Formatting workspace"
       className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm"
     >
+      <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
+        Formatting workspace
+      </p>
       {selectedSnippet ? (
-        <div className="space-y-5">
+        <div className="mt-4 space-y-5">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
-              Formatting Workspace
+            <p className="text-sm font-semibold text-stone-900">
+              Selected snippet
             </p>
-            <p className="mt-3 max-h-44 overflow-auto whitespace-pre-wrap rounded-md border border-stone-200 bg-stone-50 p-3 text-sm leading-6 text-stone-700">
-              {selectedSnippet.text}
-            </p>
+            <div className="mt-2 rounded-md border border-stone-200 bg-stone-50">
+              <div className="border-b border-stone-200 px-3 py-2">
+                <p className="truncate text-sm font-medium text-stone-800">
+                  {selectedSnippet.title}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-stone-500">
+                  {selectedSnippet.preview}
+                </p>
+              </div>
+              <p className="max-h-36 overflow-auto whitespace-pre-wrap p-3 text-sm leading-6 text-stone-700">
+                {selectedSnippet.text}
+              </p>
+            </div>
           </div>
 
           <InstructionInput
@@ -132,6 +146,7 @@ export function FormatPanel({
           <ActionBar
             canFormat={canFormat}
             hasResult={hasResult}
+            isFormatting={isFormatting}
             onClearResult={handleClearResult}
             onCopyResult={handleCopyResult}
             onFormat={handleFormat}
@@ -155,7 +170,7 @@ export function FormatPanel({
           />
         </div>
       ) : (
-        <p className="rounded-md border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-stone-500">
+        <p className="mt-4 rounded-md border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-stone-500">
           Select a saved snippet to format it.
         </p>
       )}

@@ -17,7 +17,7 @@ export function ResultPanel({ errorMessage, result, state }: ResultPanelProps) {
     }
 
     if (state === "loading") {
-      return "Formatting...";
+      return "Formatting your text...";
     }
 
     if (state === "error") {
@@ -59,7 +59,7 @@ export function ResultPanel({ errorMessage, result, state }: ResultPanelProps) {
         Result
       </p>
       <div
-        className={`mt-3 min-h-32 whitespace-pre-wrap rounded-md border p-3 text-sm leading-6 ${
+        className={`mt-3 max-h-72 min-h-32 overflow-auto whitespace-pre-wrap rounded-md border p-3 text-sm leading-6 ${
           isError
             ? "border-red-200 bg-red-50 text-red-700"
             : "border-stone-200 bg-stone-50 text-stone-600"
