@@ -11,7 +11,7 @@ export default defineConfig({
     action: {
       default_title: "FormatClip",
     },
-    permissions: ["sidePanel"],
+    permissions: ["sidePanel", "storage"],
     side_panel: {
       default_path: "sidepanel.html",
     },
