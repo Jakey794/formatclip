@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { createSnippet, type Snippet } from "../lib/snippets";
+import {
+  createSnippet,
+  getSnippetPreview,
+  getSnippetTitle,
+  type Snippet,
+} from "../lib/snippets";
 import {
   clearStoredSnippets,
   getStoredSnippets,
@@ -124,6 +129,32 @@ export function useSnippets() {
     }
   }
 
+  async function replaceSnippet(id: string, newText: string): Promise<void> {
+    const nextSnippets = snippets.map((snippet) => {
+      if (snippet.id !== id) {
+        return snippet;
+      }
+
+      return {
+        ...snippet,
+        text: newText,
+        title: getSnippetTitle(newText),
+        preview: getSnippetPreview(newText),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    try {
+      await saveStoredSnippets(nextSnippets);
+      setSnippets(nextSnippets);
+      setSelectedSnippetId(id);
+      setError(null);
+    } catch (saveError) {
+      setError(getErrorMessage(saveError));
+      throw saveError;
+    }
+  }
+
   async function clearSnippets(): Promise<void> {
     try {
       await clearStoredSnippets();
@@ -144,6 +175,7 @@ export function useSnippets() {
     addSnippet,
     selectSnippet,
     deleteSnippet,
+    replaceSnippet,
     clearSnippets,
   };
 }

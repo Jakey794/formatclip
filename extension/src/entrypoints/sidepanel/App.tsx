@@ -14,6 +14,7 @@ function App() {
     addSnippet,
     selectSnippet,
     deleteSnippet,
+    replaceSnippet,
     clearSnippets,
   } = useSnippets();
 
@@ -107,7 +108,10 @@ function App() {
           </div>
         </section>
 
-        <FormatPanel selectedSnippet={selectedSnippet} />
+        <FormatPanel
+          onReplaceSnippet={replaceSnippet}
+          selectedSnippet={selectedSnippet}
+        />
 
         {error ? (
           <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm leading-5 text-red-700">

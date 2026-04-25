@@ -2,7 +2,9 @@ type ActionBarProps = {
   canFormat: boolean;
   hasResult: boolean;
   onClearResult: () => void;
+  onCopyResult: () => void;
   onFormat: () => void;
+  onReplaceOriginal: () => void;
 };
 
 const secondaryButtonClass =
@@ -12,7 +14,9 @@ export function ActionBar({
   canFormat,
   hasResult,
   onClearResult,
+  onCopyResult,
   onFormat,
+  onReplaceOriginal,
 }: ActionBarProps) {
   return (
     <div className="space-y-3">
@@ -28,6 +32,7 @@ export function ActionBar({
         <button
           className={secondaryButtonClass}
           disabled={!hasResult}
+          onClick={onCopyResult}
           type="button"
         >
           Copy result
@@ -35,6 +40,7 @@ export function ActionBar({
         <button
           className={secondaryButtonClass}
           disabled={!hasResult}
+          onClick={onReplaceOriginal}
           type="button"
         >
           Replace original
