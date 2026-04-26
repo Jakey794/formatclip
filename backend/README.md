@@ -1,7 +1,7 @@
 # FormatClip Backend
 
 FastAPI backend for FormatClip. It exposes a health check and a text formatting
-endpoint with a mock formatter by default and optional OpenAI formatting.
+endpoint with a mock formatter by default plus optional Groq or OpenAI formatting.
 
 ## Setup
 
@@ -24,11 +24,17 @@ Mock mode is the default and requires no configuration:
 
 ```bash
 FORMATCLIP_PROVIDER=mock
-FORMATCLIP_MODEL=gpt-4.1-mini
-OPENAI_API_KEY=
 ```
 
-OpenAI is optional. To enable it, set:
+Groq is the recommended real LLM provider for the local demo. To enable it, set:
+
+```bash
+FORMATCLIP_PROVIDER=groq
+FORMATCLIP_MODEL=openai/gpt-oss-20b
+GROQ_API_KEY=your_groq_key
+```
+
+OpenAI is also supported. To enable it, set:
 
 ```bash
 FORMATCLIP_PROVIDER=openai
@@ -36,7 +42,11 @@ FORMATCLIP_MODEL=gpt-4.1-mini
 OPENAI_API_KEY=your_key
 ```
 
-If OpenAI configuration is missing or the provider call fails, the backend falls
+The extension sends the selected snippet text and whatever instruction is typed in
+the formatting box to `POST /format`. The selected provider receives both values
+and must return the same response shape.
+
+If provider configuration is missing or the provider call fails, the backend falls
 back to the mock formatter so the local demo keeps working.
 
 ## Test
@@ -86,4 +96,4 @@ Response:
 }
 ```
 
-The `/format` response schema is the same for both providers.
+The `/format` response schema is the same for mock, Groq, and OpenAI.

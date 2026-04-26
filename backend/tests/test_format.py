@@ -87,9 +87,29 @@ def test_format_rejects_empty_instruction() -> None:
     assert response.status_code == 422
 
 
-def test_format_openai_provider_without_api_key_falls_back_to_mock(monkeypatch) -> None:
+def test_format_openai_provider_without_key_falls_back_to_mock(monkeypatch) -> None:
     monkeypatch.setenv("FORMATCLIP_PROVIDER", "openai")
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    response = client.post(
+        "/format",
+        json={
+            "text": "uhh first task ; basically second task",
+            "instruction": "turn into clean bullet points",
+        },
+    )
+
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["formatted_text"] == "- First task\n- Second task"
+    assert body["detected_type"] == "notes"
+    assert "changes_made" in body
+
+
+def test_format_groq_provider_without_key_falls_back_to_mock(monkeypatch) -> None:
+    monkeypatch.setenv("FORMATCLIP_PROVIDER", "groq")
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
 
     response = client.post(
         "/format",
