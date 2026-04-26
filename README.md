@@ -13,7 +13,8 @@ Copied text from notes, websites, emails, resumes, GitHub issues, logs, and chat
 - Backend runs locally with FastAPI.
 - Extension is loaded manually in Chrome as an unpacked extension.
 - Mock formatter works by default.
-- Optional OpenAI formatting works when environment variables are configured.
+- Optional Groq formatting is the recommended real LLM mode for the local demo.
+- Optional OpenAI formatting is also supported when environment variables are configured.
 
 ## What it does
 
@@ -46,6 +47,7 @@ FastAPI Backend
   - POST /format
   - Provider-agnostic formatter service
   - Mock provider by default
+  - Optional Groq provider through environment variables
   - Optional OpenAI provider through environment variables
 ```
 
@@ -68,6 +70,7 @@ Backend:
 - Uvicorn
 - Ruff
 - pytest
+- Groq provider
 - Optional OpenAI provider
 - Mock fallback formatter
 
@@ -163,16 +166,29 @@ POST /format returns:
 
 ## Provider configuration
 
-- Mock mode is default and requires no API key.
-- Optional OpenAI mode uses:
+Mock mode is default and requires no API key:
+
+```bash
+FORMATCLIP_PROVIDER=mock
+```
+
+Groq is the recommended real LLM mode for the local demo:
+
+```bash
+FORMATCLIP_PROVIDER=groq
+FORMATCLIP_MODEL=llama-3.1-8b-instant
+GROQ_API_KEY=your_groq_key_here
+```
+
+OpenAI is also supported:
 
 ```bash
 FORMATCLIP_PROVIDER=openai
 FORMATCLIP_MODEL=gpt-4.1-mini
-OPENAI_API_KEY=your_key_here
+OPENAI_API_KEY=your_openai_key_here
 ```
 
-- If provider configuration is missing or fails, backend falls back to mock.
+If provider configuration is missing or a provider call fails, the backend logs the provider error and falls back to the mock formatter so the local demo keeps working.
 
 ## Privacy model
 
@@ -226,4 +242,4 @@ npm run build
 
 ## Status
 
-Local MVP complete. Designed for a local recruiter demo using a manually loaded Chrome extension and local FastAPI backend.
+Local MVP complete. Designed for a local recruiter demo using a manually loaded Chrome extension and local FastAPI backend with mock fallback plus optional Groq/OpenAI LLM formatting.
