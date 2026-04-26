@@ -3,7 +3,7 @@ import os
 from pydantic import BaseModel
 
 DEFAULT_OPENAI_MODEL = "gpt-4.1-mini"
-DEFAULT_GROQ_MODEL = "openai/gpt-oss-20b"
+DEFAULT_GROQ_MODEL = "llama-3.1-8b-instant"
 
 
 class Settings(BaseModel):
