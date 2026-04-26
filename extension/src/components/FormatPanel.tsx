@@ -39,8 +39,31 @@ export function FormatPanel({
     setActionErrorMessage(null);
   }
 
+  function clearStaleFormattingState() {
+    setResult(null);
+    setErrorMessage(null);
+    clearMessages();
+    setResultState("empty");
+  }
+
+  function handleInstructionChange(nextInstruction: string) {
+    setInstruction(nextInstruction);
+    clearStaleFormattingState();
+  }
+
+  function handleUseDefaultInstruction() {
+    setInstruction(DEFAULT_FORMAT_INSTRUCTION);
+    clearStaleFormattingState();
+  }
+
   async function handleFormat() {
-    if (!canFormat) {
+    if (!selectedSnippet) {
+      return;
+    }
+
+    const latestInstruction = instruction.trim();
+
+    if (!latestInstruction || isFormatting) {
       return;
     }
 
@@ -52,7 +75,7 @@ export function FormatPanel({
     try {
       const formattedResult = await formatSnippet({
         text: selectedSnippet.text,
-        instruction: instruction.trim(),
+        instruction: latestInstruction,
       });
 
       setResult(formattedResult);
@@ -137,10 +160,8 @@ export function FormatPanel({
 
           <InstructionInput
             instruction={instruction}
-            onInstructionChange={setInstruction}
-            onUseDefaultInstruction={() =>
-              setInstruction(DEFAULT_FORMAT_INSTRUCTION)
-            }
+            onInstructionChange={handleInstructionChange}
+            onUseDefaultInstruction={handleUseDefaultInstruction}
           />
 
           <ActionBar
