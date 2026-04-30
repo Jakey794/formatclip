@@ -1,32 +1,60 @@
 # FormatClip
 
-FormatClip is a Chrome extension productivity tool that saves messy copied text snippets locally and sends selected snippets to an LLM-backed FastAPI formatter when the user clicks Format.
+Chrome Manifest V3 extension for saving snippets, formatting selected text, and reusing cleaned outputs through a side-panel workflow.
 
-## Problem
+FormatClip combines a React/TypeScript Chrome extension with a FastAPI backend. It supports local snippet storage, custom formatting instructions, copy/replace workflows, and provider-swappable LLM formatting.
 
-Copied text from notes, websites, emails, resumes, GitHub issues, logs, and chats is often messy before reuse. FormatClip gives users a small local workspace for cleaning that text without automatically watching the clipboard or reading webpages.
+## Why I Built This
+
+Copied text from notes, websites, emails, resumes, GitHub issues, logs, and chats is often messy before reuse. FormatClip gives users a small local workspace for cleaning that text without automatically monitoring the clipboard or reading webpages.
+
+The goal is to make text cleanup fast, reusable, and privacy-conscious.
+
+## Features
+
+- Chrome Manifest V3 side panel
+- Add, select, edit, delete, and persist snippets
+- Format selected snippets with custom instructions
+- Copy formatted results
+- Replace original snippets with formatted output
+- FastAPI backend with typed request/response contracts
+- Provider-swappable formatter service
+- Mock formatter by default for local demos
+- Optional Groq and OpenAI provider modes
+- Local browser storage using `chrome.storage.local`
+- Tested frontend and backend workflows
+
+## Tech Stack
+
+**Extension:** Chrome Manifest V3, WXT, React, TypeScript, Tailwind CSS  
+**Backend:** FastAPI, Python, Pydantic, Uvicorn  
+**AI / Formatting:** Mock formatter, Groq provider, optional OpenAI provider  
+**Testing / Quality:** pytest, Ruff, Biome  
+**Storage:** `chrome.storage.local`
 
 ## Demo
 
-[Demo video coming soon]
+Demo screenshot or GIF:
 
-- Backend runs locally with FastAPI.
-- Extension is loaded manually in Chrome as an unpacked extension.
-- Mock formatter works by default.
-- Optional Groq formatting is the recommended real LLM mode for the local demo.
-- Optional OpenAI formatting is also supported when environment variables are configured.
+```md
+![FormatClip Demo](docs/demo.png)
+```
 
-## What it does
+## Project Structure
 
-- Add or paste text snippets manually.
-- Save snippets locally with chrome.storage.local.
-- Select a saved snippet.
-- Enter a custom formatting instruction or use the default format action.
-- Send selected text and instruction to POST /format.
-- Display formatted output, detected type, and changes made.
-- Copy result.
-- Replace original snippet.
-- Delete snippets or clear all snippets.
+```text
+formatclip/
+├── backend/
+│   ├── app/
+│   ├── tests/
+│   └── pyproject.toml
+├── extension/
+│   ├── src/
+│   ├── package.json
+│   └── wxt.config.ts
+├── .env.example
+└── README.md
+```
 
 ## Architecture
 
@@ -51,30 +79,9 @@ FastAPI Backend
   - Optional OpenAI provider through environment variables
 ```
 
-## Tech Stack
+## Local Setup
 
-Frontend:
-
-- Chrome Extension Manifest V3
-- WXT
-- React
-- TypeScript
-- Tailwind CSS
-- Biome
-- chrome.storage.local
-
-Backend:
-
-- FastAPI
-- Pydantic
-- Uvicorn
-- Ruff
-- pytest
-- Groq provider
-- Optional OpenAI provider
-- Mock fallback formatter
-
-## Backend setup
+### Backend
 
 ```bash
 cd backend
@@ -91,21 +98,16 @@ Health check:
 curl http://127.0.0.1:8000/health
 ```
 
-Expected:
+Expected response:
 
 ```json
-{"status":"ok","service":"formatclip-backend"}
+{
+  "status": "ok",
+  "service": "formatclip-backend"
+}
 ```
 
-Format request:
-
-```bash
-curl -X POST http://127.0.0.1:8000/format \
-  -H "Content-Type: application/json" \
-  -d '{"text":" uhh meeting notes login broken fix friday docs ","instruction":"turn into clean bullet points"}'
-```
-
-## Extension setup
+### Extension
 
 ```bash
 cd extension
@@ -115,28 +117,28 @@ npm run build
 
 Load in Chrome:
 
-1. Open chrome://extensions
-2. Enable Developer mode
+1. Open `chrome://extensions`
+2. Enable Developer Mode
 3. Click Load unpacked
-4. Select extension/.output/chrome-mv3
+4. Select `extension/.output/chrome-mv3`
 5. Open the FormatClip side panel
 
-## Local demo workflow
+## Local Demo Workflow
 
-1. Start backend.
-2. Build/load extension.
-3. Open side panel.
-4. Paste messy snippet.
-5. Add snippet.
-6. Select snippet.
-7. Use default instruction or custom instruction.
+1. Start the backend.
+2. Build and load the extension.
+3. Open the side panel.
+4. Paste a messy snippet.
+5. Add the snippet.
+6. Select the snippet.
+7. Use the default instruction or enter a custom instruction.
 8. Click Format.
-9. Review result.
-10. Copy result or replace original snippet.
+9. Review the formatted result.
+10. Copy the result or replace the original snippet.
 
-## API contract
+## API Contract
 
-GET /health returns:
+`GET /health` returns:
 
 ```json
 {
@@ -145,28 +147,40 @@ GET /health returns:
 }
 ```
 
-POST /format accepts:
+`POST /format` accepts:
 
 ```json
 {
-  "text": "messy copied text here",
+  "text": " uhh meeting notes login broken fix friday docs ",
   "instruction": "turn into clean bullet points"
 }
 ```
 
-POST /format returns:
+`POST /format` returns:
 
 ```json
 {
-  "formatted_text": "...",
+  "formatted_text": "- Meeting notes\n- Login is broken\n- Fix target: Friday\n- Update documentation",
   "detected_type": "notes",
-  "changes_made": ["cleaned structure", "removed filler", "converted to bullets"]
+  "changes_made": [
+    "cleaned structure",
+    "removed filler",
+    "converted to bullets"
+  ]
 }
 ```
 
-## Provider configuration
+Example request:
 
-Mock mode is default and requires no API key:
+```bash
+curl -X POST http://127.0.0.1:8000/format \
+  -H "Content-Type: application/json" \
+  -d '{"text":" uhh meeting notes login broken fix friday docs ","instruction":"turn into clean bullet points"}'
+```
+
+## Provider Configuration
+
+Mock mode is the default and requires no API key:
 
 ```bash
 FORMATCLIP_PROVIDER=mock
@@ -190,36 +204,15 @@ OPENAI_API_KEY=your_openai_key_here
 
 If provider configuration is missing or a provider call fails, the backend logs the provider error and falls back to the mock formatter so the local demo keeps working.
 
-## Privacy model
+## Privacy Model
 
-- Snippets are stored locally in chrome.storage.local.
+- Snippets are stored locally in `chrome.storage.local`.
 - The extension does not monitor the clipboard.
-- The extension does not read webpages.
+- The extension does not read webpages automatically.
 - Text is sent to the backend only when the user clicks Format.
 - No accounts or database are used.
 
-## Out of scope
-
-- Authentication
-- User accounts
-- Database persistence
-- Sync across devices
-- Automatic clipboard monitoring
-- Automatic webpage reading
-- Chrome Web Store publishing
-- Payments
-- Large web app dashboard
-- Complex agent workflows
-
-## Future improvements
-
-- Hosted backend for easier demos.
-- Formatting presets.
-- Import/export snippets.
-- Stronger provider response validation.
-- Demo GIF/video.
-
-## Development checks
+## Testing and Development Checks
 
 Backend:
 
@@ -240,6 +233,39 @@ npm run check
 npm run build
 ```
 
+## What I Learned
+
+- Chrome extensions need a clear privacy model.
+- Local browser storage is better than monitoring the clipboard.
+- Provider-swappable AI backends make the app easier to demo and extend.
+- A mock fallback is useful for testing without relying on external APIs.
+- Small AI tools are easier to evaluate when the workflow is narrow and explicit.
+
+## Out of Scope
+
+- Authentication
+- User accounts
+- Database persistence
+- Sync across devices
+- Automatic clipboard monitoring
+- Automatic webpage reading
+- Chrome Web Store publishing
+- Payments
+- Large web app dashboard
+- Complex agent workflows
+
 ## Status
 
 Local MVP complete. Designed for a local recruiter demo using a manually loaded Chrome extension and local FastAPI backend with mock fallback plus optional Groq/OpenAI LLM formatting.
+
+Future improvements could include:
+
+- hosted backend for easier demos
+- formatting presets
+- import/export snippets
+- stronger provider response validation
+- demo GIF/video
+
+## License
+
+MIT License.
