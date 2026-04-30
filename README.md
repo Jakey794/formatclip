@@ -32,13 +32,6 @@ The goal is to make text cleanup fast, reusable, and privacy-conscious.
 **Testing / Quality:** pytest, Ruff, Biome  
 **Storage:** `chrome.storage.local`
 
-## Demo
-
-Demo screenshot or GIF:
-
-```md
-![FormatClip Demo](docs/demo.png)
-```
 
 ## Project Structure
 
