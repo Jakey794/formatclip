@@ -9,7 +9,7 @@ FormatClip combines a React/TypeScript Chrome extension with a FastAPI backend. 
 <img width="1509" height="817" alt="Screenshot 2026-05-03 at 5 59 37 PM" src="https://github.com/user-attachments/assets/31fb5076-8204-40a5-a5ce-dab606adde1f" />
 
 
-The app takes incident context such as alerts, logs, metrics, deployment notes, and service information, then returns structured triage output including severity, impacted service, root-cause hypothesis, immediate next actions, and confidence score.**
+FormatClip provides a Chrome side-panel workflow for saving snippets, applying formatting instructions, and copying or replacing cleaned outputs.
 
 ## Why I Built This
 
