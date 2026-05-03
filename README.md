@@ -4,7 +4,7 @@ Chrome Manifest V3 extension for saving snippets, formatting selected text, and 
 
 FormatClip combines a React/TypeScript Chrome extension with a FastAPI backend. It supports local snippet storage, custom formatting instructions, copy/replace workflows, and provider-swappable LLM formatting.
 
-**## Demo
+## Demo
 
 <img width="1509" height="817" alt="Screenshot 2026-05-03 at 5 59 37 PM" src="https://github.com/user-attachments/assets/31fb5076-8204-40a5-a5ce-dab606adde1f" />
 
