@@ -1,3 +1,4 @@
+<img width="1506" height="820" alt="Screenshot 2026-05-03 at 5 56 11 PM" src="https://github.com/user-attachments/assets/8c43ecf6-dffa-49a3-bec1-85c1f76f8c96" />
 # FormatClip
 
 Chrome Manifest V3 extension for saving snippets, formatting selected text, and reusing cleaned outputs through a side-panel workflow.
