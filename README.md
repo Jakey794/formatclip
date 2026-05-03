@@ -1,9 +1,15 @@
-<img width="1506" height="820" alt="Screenshot 2026-05-03 at 5 56 11 PM" src="https://github.com/user-attachments/assets/8c43ecf6-dffa-49a3-bec1-85c1f76f8c96" />
 # FormatClip
 
 Chrome Manifest V3 extension for saving snippets, formatting selected text, and reusing cleaned outputs through a side-panel workflow.
 
 FormatClip combines a React/TypeScript Chrome extension with a FastAPI backend. It supports local snippet storage, custom formatting instructions, copy/replace workflows, and provider-swappable LLM formatting.
+
+**## Demo
+
+<img width="1509" height="817" alt="Screenshot 2026-05-03 at 5 59 37 PM" src="https://github.com/user-attachments/assets/31fb5076-8204-40a5-a5ce-dab606adde1f" />
+
+
+The app takes incident context such as alerts, logs, metrics, deployment notes, and service information, then returns structured triage output including severity, impacted service, root-cause hypothesis, immediate next actions, and confidence score.**
 
 ## Why I Built This
 
