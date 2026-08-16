@@ -59,11 +59,14 @@ export function ResultPanel({ errorMessage, result, state }: ResultPanelProps) {
         Result
       </p>
       <div
+        aria-busy={state === "loading"}
+        aria-live="polite"
         className={`mt-3 max-h-72 min-h-32 overflow-auto whitespace-pre-wrap rounded-md border p-3 text-sm leading-6 ${
           isError
             ? "border-red-200 bg-red-50 text-red-700"
             : "border-stone-200 bg-stone-50 text-stone-600"
         }`}
+        role={isError ? "alert" : "status"}
       >
         {renderContent()}
       </div>

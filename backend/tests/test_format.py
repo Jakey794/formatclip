@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.schemas import MAX_INSTRUCTION_LENGTH, MAX_TEXT_LENGTH
 
 client = TestClient(app)
 
@@ -82,6 +83,30 @@ def test_format_rejects_empty_instruction() -> None:
     response = client.post(
         "/format",
         json={"text": "messy copied text here", "instruction": ""},
+    )
+
+    assert response.status_code == 422
+
+
+def test_format_rejects_oversized_text() -> None:
+    response = client.post(
+        "/format",
+        json={
+            "text": "x" * (MAX_TEXT_LENGTH + 1),
+            "instruction": "clean this text",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_format_rejects_oversized_instruction() -> None:
+    response = client.post(
+        "/format",
+        json={
+            "text": "messy text",
+            "instruction": "x" * (MAX_INSTRUCTION_LENGTH + 1),
+        },
     )
 
     assert response.status_code == 422

@@ -1,99 +1,59 @@
 # FormatClip Backend
 
-FastAPI backend for FormatClip. It exposes a health check and a text formatting
-endpoint with a mock formatter by default plus optional Groq or OpenAI formatting.
+Local FastAPI service for the FormatClip Chrome extension. It exposes a health
+check and a bounded text-formatting endpoint with a deterministic mock provider
+plus optional OpenAI and Groq adapters.
 
 ## Setup
 
 ```bash
-cd backend
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
 ## Run
 
 ```bash
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
-## Formatter Provider
+The default Uvicorn bind address is loopback-only. Health and OpenAPI endpoints
+are available at `http://127.0.0.1:8000/health` and
+`http://127.0.0.1:8000/docs`.
 
-Mock mode is the default and requires no configuration:
+## Configuration
+
+Mock mode requires no secret:
 
 ```bash
 FORMATCLIP_PROVIDER=mock
 ```
 
-Groq is the recommended real LLM provider for the local demo. To enable it, set:
+OpenAI and Groq modes use `OPENAI_API_KEY` and `GROQ_API_KEY` respectively.
+See the repository `.env.example` for all supported settings.
 
-```bash
-FORMATCLIP_PROVIDER=groq
-FORMATCLIP_MODEL=openai/gpt-oss-20b
-GROQ_API_KEY=your_groq_key
-```
+`BACKEND_CORS_ORIGINS` configures ordinary web origins. During unpacked
+development, valid Chrome extension origins are accepted. Set
+`FORMATCLIP_EXTENSION_ORIGINS` to one or more exact comma-separated extension
+origins when the installed extension ID is stable.
 
-OpenAI is also supported. To enable it, set:
-
-```bash
-FORMATCLIP_PROVIDER=openai
-FORMATCLIP_MODEL=gpt-4.1-mini
-OPENAI_API_KEY=your_key
-```
-
-The extension sends the selected snippet text and whatever instruction is typed in
-the formatting box to `POST /format`. The selected provider receives both values
-and must return the same response shape.
-
-If provider configuration is missing or the provider call fails, the backend falls
-back to the mock formatter so the local demo keeps working.
-
-## Test
-
-```bash
-pytest
-```
-
-## Lint And Format
-
-```bash
-ruff check .
-ruff format .
-```
+If an optional provider is missing configuration or fails, FormatClip logs the
+provider error without snippet contents and falls back to the mock formatter.
 
 ## API Contract
 
-### `GET /health`
+- `GET /health` returns `{ "status": "ok", "service": "formatclip-backend" }`.
+- `POST /format` requires non-empty `text` and `instruction` values.
+- Text is limited to 20,000 characters and instructions to 2,000 characters.
+- All providers return `formatted_text`, `detected_type`, and `changes_made`.
 
-Returns:
+## Checks
 
-```json
-{
-  "status": "ok",
-  "service": "formatclip-backend"
-}
+```bash
+pytest
+ruff check .
+ruff format --check .
+pip-audit
 ```
-
-### `POST /format`
-
-Request:
-
-```json
-{
-  "text": "messy copied text here",
-  "instruction": "turn into clean bullet points"
-}
-```
-
-Response:
-
-```json
-{
-  "formatted_text": "- Messy copied text here",
-  "detected_type": "notes",
-  "changes_made": ["cleaned structure", "converted to bullets"]
-}
-```
-
-The `/format` response schema is the same for mock, Groq, and OpenAI.

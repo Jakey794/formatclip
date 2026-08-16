@@ -1,6 +1,6 @@
 import pytest
 
-from app.schemas import FormatResponse
+from app.schemas import MAX_FORMATTED_TEXT_LENGTH, FormatResponse
 from app.services.formatter_service import format_text
 from app.services.providers.groq_provider import _parse_response as parse_groq_response
 from app.services.providers.mock_provider import format_with_mock
@@ -127,3 +127,14 @@ def test_groq_json_parser_accepts_markdown_fenced_json() -> None:
 def test_groq_json_parser_rejects_invalid_json() -> None:
     with pytest.raises(ProviderError, match="Groq returned invalid JSON"):
         parse_groq_response("not json")
+
+
+def test_groq_json_parser_rejects_oversized_output() -> None:
+    payload = (
+        '{"formatted_text":"'
+        + ("x" * (MAX_FORMATTED_TEXT_LENGTH + 1))
+        + '","detected_type":"text","changes_made":[]}'
+    )
+
+    with pytest.raises(ProviderError, match="formatted_text"):
+        parse_groq_response(payload)

@@ -1,23 +1,35 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "formatclip-backend"
-version = "0.1.0"
-description = "Mock backend API for FormatClip."
+version = "1.0.0"
+description = "Local FastAPI formatting service for the FormatClip Chrome extension."
 readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Jacob Allan" }]
 dependencies = [
-    "fastapi",
-    "groq",
-    "openai",
-    "pydantic",
-    "uvicorn[standard]",
+    "fastapi>=0.115,<1",
+    "groq>=1,<2",
+    "openai>=2,<4",
+    "pydantic>=2.8,<3",
+    "uvicorn[standard]>=0.30,<1",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "httpx",
-    "pytest",
-    "ruff",
+    "httpx>=0.27,<1",
+    "pip-audit>=2.8,<3",
+    "pytest>=8,<10",
+    "ruff>=0.8,<1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Jakey794/formatclip"
+Issues = "https://github.com/Jakey794/formatclip/issues"
+Source = "https://github.com/Jakey794/formatclip"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

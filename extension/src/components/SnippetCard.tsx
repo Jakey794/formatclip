@@ -14,7 +14,7 @@ export function SnippetCard({
   return (
     <li>
       <button
-        aria-current={isSelected}
+        aria-pressed={isSelected}
         className={`w-full rounded-lg border p-3 text-left shadow-sm transition ${
           isSelected
             ? "border-stone-950 bg-stone-100 ring-2 ring-stone-300"
@@ -26,7 +26,7 @@ export function SnippetCard({
         <span className="block text-sm font-semibold text-stone-900">
           {snippet.title}
         </span>
-        <span className="mt-1 block text-xs leading-5 text-stone-600">
+        <span className="mt-1 block break-words text-xs leading-5 text-stone-600">
           {snippet.preview}
         </span>
         <time

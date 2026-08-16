@@ -176,6 +176,7 @@ export function FormatPanel({
 
           {copyMessage || replaceMessage || actionErrorMessage ? (
             <p
+              aria-live="polite"
               className={`text-sm font-medium ${
                 actionErrorMessage ? "text-red-700" : "text-emerald-700"
               }`}
@@ -191,7 +192,10 @@ export function FormatPanel({
           />
         </div>
       ) : (
-        <p className="mt-4 rounded-md border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-stone-500">
+        <p
+          className="mt-4 rounded-md border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-stone-500"
+          role="status"
+        >
           Select a saved snippet to format it.
         </p>
       )}

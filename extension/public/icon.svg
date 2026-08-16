@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">FormatClip icon</title>
+  <desc id="description">A white paper clip and text lines on a blue rounded square.</desc>
+  <rect width="128" height="128" rx="28" fill="#1d4ed8"/>
+  <path d="M43 36h42a9 9 0 0 1 9 9v47H43a9 9 0 0 1-9-9V45a9 9 0 0 1 9-9Z" fill="#fff"/>
+  <path d="M55 55h25M55 67h25M55 79h16" fill="none" stroke="#1d4ed8" stroke-linecap="round" stroke-width="7"/>
+  <path d="M29 68v20c0 12 9 21 21 21h22c12 0 21-9 21-21V58c0-8-6-14-14-14s-14 6-14 14v27c0 3-2 5-5 5s-5-2-5-5V61" fill="none" stroke="#0c0a09" stroke-linecap="round" stroke-linejoin="round" stroke-width="9"/>
+</svg>

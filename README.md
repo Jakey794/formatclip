@@ -1,87 +1,70 @@
 # FormatClip
 
-Chrome Manifest V3 extension for saving snippets, formatting selected text, and reusing cleaned outputs through a side-panel workflow.
+[![CI](https://github.com/Jakey794/formatclip/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Jakey794/formatclip/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Jakey794/formatclip/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Jakey794/formatclip/actions/workflows/codeql.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-FormatClip combines a React/TypeScript Chrome extension with a FastAPI backend. It supports local snippet storage, custom formatting instructions, copy/replace workflows, and provider-swappable LLM formatting.
+FormatClip is a privacy-conscious Chrome Manifest V3 extension for saving text
+snippets locally, formatting them on demand, and reusing the result from a
+focused side-panel workflow.
 
-## Demo
+It pairs a WXT, React, and TypeScript extension with a small FastAPI service.
+Mock formatting works without an API key; optional OpenAI and Groq adapters use
+the same typed response contract.
 
-<img width="1509" height="817" alt="Screenshot 2026-05-03 at 5 59 37 PM" src="https://github.com/user-attachments/assets/31fb5076-8204-40a5-a5ce-dab606adde1f" />
+![FormatClip side panel showing saved snippets, formatting instructions, and a cleaned result](docs/formatclip-demo.png)
 
+## Why FormatClip
 
-FormatClip provides a Chrome side-panel workflow for saving snippets, applying formatting instructions, and copying or replacing cleaned outputs.
+Copied notes, emails, issue reports, logs, and resume text often need cleanup
+before reuse. FormatClip provides a deliberate workflow without silently
+monitoring the clipboard or reading webpages:
 
-## Why I Built This
+1. Add a snippet manually.
+2. Select it and write a formatting instruction.
+3. Click **Format** to send only that text to the configured local service.
+4. Copy the result or replace the saved snippet.
 
-Copied text from notes, websites, emails, resumes, GitHub issues, logs, and chats is often messy before reuse. FormatClip gives users a small local workspace for cleaning that text without automatically monitoring the clipboard or reading webpages.
+## Highlights
 
-The goal is to make text cleanup fast, reusable, and privacy-conscious.
-
-## Features
-
-- Chrome Manifest V3 side panel
-- Add, select, edit, delete, and persist snippets
-- Format selected snippets with custom instructions
-- Copy formatted results
-- Replace original snippets with formatted output
-- FastAPI backend with typed request/response contracts
-- Provider-swappable formatter service
-- Mock formatter by default for local demos
-- Optional Groq and OpenAI provider modes
-- Local browser storage using `chrome.storage.local`
-- Tested frontend and backend workflows
-
-## Tech Stack
-
-**Extension:** Chrome Manifest V3, WXT, React, TypeScript, Tailwind CSS  
-**Backend:** FastAPI, Python, Pydantic, Uvicorn  
-**AI / Formatting:** Mock formatter, Groq provider, optional OpenAI provider  
-**Testing / Quality:** pytest, Ruff, Biome  
-**Storage:** `chrome.storage.local`
-
-
-## Project Structure
-
-```text
-formatclip/
-├── backend/
-│   ├── app/
-│   ├── tests/
-│   └── pyproject.toml
-├── extension/
-│   ├── src/
-│   ├── package.json
-│   └── wxt.config.ts
-├── .env.example
-└── README.md
-```
+- Chrome side panel with a single, responsive workflow
+- Local persistence through `chrome.storage.local`
+- Add, select, replace, delete, and clear snippet actions
+- Typed FastAPI request and response schemas with input limits
+- Mock, OpenAI, and Groq provider adapters
+- Minimal extension permissions and local-only backend access by default
+- Keyboard-visible focus states, live status announcements, and reduced-motion support
+- Frontend and backend tests, dependency audits, CodeQL, and bundle budgets in CI
 
 ## Architecture
 
 ```text
-Chrome Side Panel Extension
-  - WXT + React + TypeScript
-  - Tailwind CSS
-  - chrome.storage.local
-  - Manual snippet input
-  - Explicit Format button
-
-        |
-        | POST /format
-        v
-
-FastAPI Backend
-  - GET /health
-  - POST /format
-  - Provider-agnostic formatter service
-  - Mock provider by default
-  - Optional Groq provider through environment variables
-  - Optional OpenAI provider through environment variables
+Chrome side panel (WXT + React + TypeScript)
+  ├─ manual snippet input
+  ├─ chrome.storage.local
+  └─ explicit POST /format
+                 │
+                 ▼
+FastAPI service on 127.0.0.1:8000
+  ├─ GET /health
+  ├─ POST /format
+  └─ mock | OpenAI | Groq provider
 ```
 
-## Local Setup
+The repository intentionally has no Vercel deployment or public web frontend.
+FormatClip is a browser extension backed by a local service, so website SEO
+artifacts such as a sitemap, canonical URL, `robots.txt`, or `llms.txt` would not
+describe a real public surface.
 
-### Backend
+## Quick Start
+
+Requirements:
+
+- Python 3.11+
+- Node.js 22+
+- Chrome 114+
+
+### 1. Start the backend
 
 ```bash
 cd backend
@@ -92,75 +75,116 @@ python -m pip install -e ".[dev]"
 python -m uvicorn app.main:app --reload
 ```
 
-Health check:
+Confirm the service is running:
 
 ```bash
 curl http://127.0.0.1:8000/health
 ```
 
-Expected response:
-
-```json
-{
-  "status": "ok",
-  "service": "formatclip-backend"
-}
-```
-
-### Extension
+### 2. Build the extension
 
 ```bash
 cd extension
-npm install
+npm ci
 npm run build
 ```
 
-Load in Chrome:
+### 3. Load it in Chrome
 
-1. Open `chrome://extensions`
-2. Enable Developer Mode
-3. Click Load unpacked
-4. Select `extension/.output/chrome-mv3`
-5. Open the FormatClip side panel
+1. Open `chrome://extensions`.
+2. Enable **Developer mode**.
+3. Select **Load unpacked**.
+4. Choose `extension/.output/chrome-mv3`.
+5. Click the FormatClip toolbar icon to open the side panel.
 
-## Local Demo Workflow
+## Provider Configuration
 
-1. Start the backend.
-2. Build and load the extension.
-3. Open the side panel.
-4. Paste a messy snippet.
-5. Add the snippet.
-6. Select the snippet.
-7. Use the default instruction or enter a custom instruction.
-8. Click Format.
-9. Review the formatted result.
-10. Copy the result or replace the original snippet.
+Copy `.env.example` to `.env` or export the values in the shell that starts the
+backend. Mock mode is the safe default and needs no API key:
 
-## API Contract
+```bash
+FORMATCLIP_PROVIDER=mock
+```
 
-`GET /health` returns:
+Optional OpenAI configuration:
+
+```bash
+FORMATCLIP_PROVIDER=openai
+FORMATCLIP_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=your_key_here
+```
+
+Optional Groq configuration:
+
+```bash
+FORMATCLIP_PROVIDER=groq
+FORMATCLIP_MODEL=llama-3.1-8b-instant
+GROQ_API_KEY=your_key_here
+```
+
+Never commit a populated `.env` file. If a configured provider is unavailable,
+the service logs the provider failure without logging snippet text and falls
+back to the deterministic mock formatter.
+
+## Privacy and Security
+
+- Snippets stay in local extension storage.
+- FormatClip does not monitor the clipboard or read the active webpage.
+- Text leaves the extension only after the user clicks **Format**.
+- The default backend address is loopback-only (`127.0.0.1:8000`).
+- The manifest requests only `sidePanel`, `storage`, and the two local backend origins.
+- API keys stay in the backend environment and are never bundled into the extension.
+- No user accounts, analytics, database, or telemetry are included.
+
+For unpacked development, the backend accepts valid Chrome extension origins.
+For a fixed installed extension ID, set `FORMATCLIP_EXTENSION_ORIGINS` to an
+exact comma-separated origin such as `chrome-extension://<extension-id>`.
+See [SECURITY.md](SECURITY.md) for responsible disclosure.
+See [PRIVACY.md](PRIVACY.md) for the complete data-handling statement.
+
+## Development Checks
+
+Backend:
+
+```bash
+cd backend
+pytest
+ruff check .
+ruff format --check .
+pip-audit
+```
+
+Extension:
+
+```bash
+cd extension
+npm run format
+npm run check
+npm test
+npm run build
+npm run check:bundle
+npm audit --audit-level=high
+```
+
+Production builds fail if JavaScript exceeds 225 kB, total code exceeds 245 kB,
+or any source map is emitted.
+
+## API
+
+`GET /health` returns service status. `POST /format` accepts:
 
 ```json
 {
-  "status": "ok",
-  "service": "formatclip-backend"
+  "text": "uhh meeting notes login broken; fix Friday; update docs",
+  "instruction": "turn this into clean bullet points"
 }
 ```
 
-`POST /format` accepts:
+and returns:
 
 ```json
 {
-  "text": " uhh meeting notes login broken fix friday docs ",
-  "instruction": "turn into clean bullet points"
-}
-```
-
-`POST /format` returns:
-
-```json
-{
-  "formatted_text": "- Meeting notes\n- Login is broken\n- Fix target: Friday\n- Update documentation",
+  "formatted_text": "- Meeting notes login broken\n- Fix Friday\n- Update docs",
   "detected_type": "notes",
   "changes_made": [
     "cleaned structure",
@@ -170,102 +194,36 @@ Load in Chrome:
 }
 ```
 
-Example request:
+Interactive OpenAPI documentation is available locally at
+`http://127.0.0.1:8000/docs` while the backend is running.
 
-```bash
-curl -X POST http://127.0.0.1:8000/format \
-  -H "Content-Type: application/json" \
-  -d '{"text":" uhh meeting notes login broken fix friday docs ","instruction":"turn into clean bullet points"}'
+## Project Structure
+
+```text
+formatclip/
+├── .github/        # CI, CodeQL, Dependabot, and contribution templates
+├── backend/        # FastAPI service, providers, and pytest suite
+├── docs/           # Demo and supporting project documentation
+├── extension/      # WXT extension, React UI, tests, and icon assets
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── PRIVACY.md
+└── SECURITY.md
 ```
 
-## Provider Configuration
+## Project Status
 
-Mock mode is the default and requires no API key:
+Version 1.0 is a complete local-first portfolio release. Chrome Web Store
+publishing and a hosted multi-user backend are intentionally out of scope; both
+would require a separate privacy, abuse-prevention, authentication, and
+operations design.
 
-```bash
-FORMATCLIP_PROVIDER=mock
-```
+## Contributing
 
-Groq is the recommended real LLM mode for the local demo:
-
-```bash
-FORMATCLIP_PROVIDER=groq
-FORMATCLIP_MODEL=llama-3.1-8b-instant
-GROQ_API_KEY=your_groq_key_here
-```
-
-OpenAI is also supported:
-
-```bash
-FORMATCLIP_PROVIDER=openai
-FORMATCLIP_MODEL=gpt-4.1-mini
-OPENAI_API_KEY=your_openai_key_here
-```
-
-If provider configuration is missing or a provider call fails, the backend logs the provider error and falls back to the mock formatter so the local demo keeps working.
-
-## Privacy Model
-
-- Snippets are stored locally in `chrome.storage.local`.
-- The extension does not monitor the clipboard.
-- The extension does not read webpages automatically.
-- Text is sent to the backend only when the user clicks Format.
-- No accounts or database are used.
-
-## Testing and Development Checks
-
-Backend:
-
-```bash
-cd backend
-source .venv/bin/activate
-pytest
-ruff format .
-ruff check .
-```
-
-Extension:
-
-```bash
-cd extension
-npm run format
-npm run check
-npm run build
-```
-
-## What I Learned
-
-- Chrome extensions need a clear privacy model.
-- Local browser storage is better than monitoring the clipboard.
-- Provider-swappable AI backends make the app easier to demo and extend.
-- A mock fallback is useful for testing without relying on external APIs.
-- Small AI tools are easier to evaluate when the workflow is narrow and explicit.
-
-## Out of Scope
-
-- Authentication
-- User accounts
-- Database persistence
-- Sync across devices
-- Automatic clipboard monitoring
-- Automatic webpage reading
-- Chrome Web Store publishing
-- Payments
-- Large web app dashboard
-- Complex agent workflows
-
-## Status
-
-Local MVP complete. Designed for a local recruiter demo using a manually loaded Chrome extension and local FastAPI backend with mock fallback plus optional Groq/OpenAI LLM formatting.
-
-Future improvements could include:
-
-- hosted backend for easier demos
-- formatting presets
-- import/export snippets
-- stronger provider response validation
-- demo GIF/video
+Issues and focused pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md)
+before proposing a change.
 
 ## License
 
-MIT License.
+FormatClip is available under the [MIT License](LICENSE).
