@@ -3,6 +3,7 @@ import type { FormatRequest, FormatResponse } from "./types";
 
 const BACKEND_UNREACHABLE_MESSAGE =
   "Could not reach the local FormatClip backend. Start FastAPI on http://127.0.0.1:8000 and try again.";
+const REQUEST_TIMEOUT_MS = 30_000;
 
 function isFormatResponse(value: unknown): value is FormatResponse {
   if (!value || typeof value !== "object") {
@@ -23,6 +24,11 @@ export async function formatSnippet(
   request: FormatRequest,
 ): Promise<FormatResponse> {
   let response: Response;
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    REQUEST_TIMEOUT_MS,
+  );
 
   try {
     response = await fetch(`${API_BASE_URL}/format`, {
@@ -34,9 +40,17 @@ export async function formatSnippet(
         text: request.text,
         instruction: request.instruction,
       }),
+      signal: controller.signal,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error(
+        "Formatting timed out after 30 seconds. Please try again.",
+      );
+    }
     throw new Error(BACKEND_UNREACHABLE_MESSAGE);
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 
   if (!response.ok) {

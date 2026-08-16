@@ -34,8 +34,8 @@ def format_text(text: str, instruction: str) -> FormatResponse:
         return formatter(text=text, instruction=instruction)
     except Exception as exc:
         logger.warning(
-            "FormatClip provider %s failed; falling back to mock: %s",
+            "FormatClip provider %s failed with %s; falling back to mock.",
             provider,
-            exc,
+            type(exc).__name__,
         )
     return format_with_mock(text=text, instruction=instruction)
